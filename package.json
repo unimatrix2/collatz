@@ -1,17 +1,32 @@
 {
-  "name": "three-x-example",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "three-x-ui",
+  "private": true,
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
-  "repository": {
-    "type": "git",
-    "url": "github.com/unimatrix2/three-x-example.git"
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "eslint": "^9.9.0",
+    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
+    "eslint-plugin-react-refresh": "^0.4.9",
+    "globals": "^15.9.0",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^8.0.1",
+    "vite": "^5.4.1"
   },
   "author": "Danny Nisenbaum (unimatrix2)",
   "license": "CC-BY-NC-SA-4.0",
-  "description": ""
+  "description": "A UI to graph out the 3X+1 problem"
 }
