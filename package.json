@@ -1,0 +1,17 @@
+{
+  "name": "three-x-example",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/unimatrix2/three-x-example.git"
+  },
+  "author": "Danny Nisenbaum (unimatrix2)",
+  "license": "CC-BY-NC-SA-4.0",
+  "description": ""
+}
