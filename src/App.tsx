@@ -7,7 +7,9 @@ import { TopBar } from '@/components/organism/TopBar';
 
 function App() {
   const [number, setNumber] = useState<string>('');
-  const [sequences, setSequences] = useState<{ id: number, sequence: number[], color: string }[]>([]);
+  const [sequences, setSequences] = useState<
+    { id: number; sequence: number[]; color: string }[]
+  >([]);
   const svgRef = useRef<SVGSVGElement>(null);
 
   const updateNumber = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +51,9 @@ function App() {
     const margin = { top: 20, right: 30, bottom: 30, left: 40 };
     const innerHeight = height - margin.top - margin.bottom;
 
-    const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+    const g = svg
+      .append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
 
     const root = { name: '1', children: [] };
     const nodeMap = new Map();
@@ -60,7 +64,12 @@ function App() {
       for (let i = sequence.length - 1; i >= 0; i--) {
         const num = sequence[i];
         if (!nodeMap.has(num)) {
-          const newNode = { name: num < 5000 ? num.toString() : '', fullName: num.toString(), children: [], color };
+          const newNode = {
+            name: num < 5000 ? num.toString() : '',
+            fullName: num.toString(),
+            children: [],
+            color,
+          };
           nodeMap.set(num, newNode);
           // @ts-ignore
           currentNode.children.push(newNode);
@@ -75,15 +84,20 @@ function App() {
     treeLayout(rootHierarchy);
 
     // Calculate the maximum depth of the tree
-    const maxDepth = d3.max(rootHierarchy.descendants(), d => d.depth) || 1;
-    const depth = svgRef.current!.clientWidth <= 360 ? maxDepth * 300 : maxDepth * 150;
-    const dynamicWidth = depth >= svgRef.current!.clientWidth ? depth : svgRef.current?.clientWidth  // Adjust the multiplier as needed
+    const maxDepth = d3.max(rootHierarchy.descendants(), (d) => d.depth) || 1;
+    const depth =
+      svgRef.current!.clientWidth <= 360 ? maxDepth * 300 : maxDepth * 150;
+    const dynamicWidth =
+      depth >= svgRef.current!.clientWidth
+        ? depth
+        : svgRef.current?.clientWidth; // Adjust the multiplier as needed
 
     // Update the SVG width dynamically
     // @ts-ignore
     svg.attr('width', dynamicWidth);
 
-    const zoom = d3.zoom()
+    const zoom = d3
+      .zoom()
       .scaleExtent([0.2, 2])
       .on('zoom', (event) => {
         g.attr('transform', event.transform);
@@ -93,7 +107,9 @@ function App() {
     svg.call(zoom);
 
     // Create a tooltip
-    const tooltip = d3.select('body').append('div')
+    const tooltip = d3
+      .select('body')
+      .append('div')
       .attr('class', 'tooltip')
       .style('position', 'absolute')
       .style('visibility', 'hidden')
@@ -105,59 +121,68 @@ function App() {
 
     g.selectAll('.link')
       .data(rootHierarchy.links())
-      .enter().append('path')
+      .enter()
+      .append('path')
       .attr('class', 'link')
       // @ts-ignore
       .attr('d', d3.linkHorizontal()
-      // @ts-ignore
-        .x(d => d.y)
-      // @ts-ignore
-        .y(d => d.x))
+          // @ts-ignore
+          .x((d) => d.y)
+          // @ts-ignore
+          .y((d) => d.x)
+      )
       .attr('fill', 'none')
       .attr('stroke', '#ccc');
 
-    const node = g.selectAll('.node')
+    const node = g
+      .selectAll('.node')
       .data(rootHierarchy.descendants())
-      .enter().append('g')
+      .enter()
+      .append('g')
       .attr('class', 'node')
-      .attr('transform', d => `translate(${d.y},${d.x})`);
+      .attr('transform', (d) => `translate(${d.y},${d.x})`);
 
-    node.append('circle')
+    node
+      .append('circle')
       .attr('r', 5)
       // @ts-ignore
-      .attr('fill', d => d.data.color || '#000')
+      .attr('fill', (d) => d.data.color || '#000')
       .on('mouseover', (_event, d) => {
         // @ts-ignore
         if (d.data.fullName) {
           // @ts-ignore
-          tooltip.html(d.data.fullName)
-            .style('visibility', 'visible');
+          tooltip.html(d.data.fullName).style('visibility', 'visible');
         }
       })
       .on('mousemove', (event) => {
-        tooltip.style('top', (event.pageY - 10) + 'px')
-          .style('left', (event.pageX + 10) + 'px');
+        tooltip
+          .style('top', event.pageY - 10 + 'px')
+          .style('left', event.pageX + 10 + 'px');
       })
       .on('mouseout', () => {
         tooltip.style('visibility', 'hidden');
       });
 
-    node.append('text')
+    node
+      .append('text')
       .attr('dy', '.35em')
-      .attr('x', d => d.children ? -10 : 10)
-      .style('text-anchor', d => d.children ? 'end' : 'start')
-      .text(d => d.data.name);
-
+      .attr('x', (d) => (d.children ? -10 : 10))
+      .style('text-anchor', (d) => (d.children ? 'end' : 'start'))
+      .text((d) => d.data.name);
   }, [sequences]);
-  
+
   return (
     <main className="h-[100dvh] [background-size:16px_16px] bg-[radial-gradient(#80808080_1px,transparent_1px)] flex flex-col justify-center">
       <nav className="w-full min-w-72 pt-5 bg-transparent flex justify-center shadow-2xl">
-        <TopBar number={number} updateNumber={updateNumber} addSequence={addSequence} />
+        <TopBar
+          number={number}
+          updateNumber={updateNumber}
+          addSequence={addSequence}
+        />
       </nav>
-      <section className='w-full h-full overflow-hidden'>
-      <svg ref={svgRef} width="100%" height="100%"></svg>
-      </section>
+        <section className="w-full h-full overflow-hidden">
+          <svg ref={svgRef} width="100%" height="100%"></svg>
+        </section>
     </main>
   );
 }

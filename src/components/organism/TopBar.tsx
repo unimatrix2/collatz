@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 export function TopBar({ number, updateNumber, addSequence }: TopBarProps) {
   return (
@@ -14,10 +14,10 @@ export function TopBar({ number, updateNumber, addSequence }: TopBarProps) {
         className="w-72"
       ></Input>
       <Button onClick={addSequence}>Gerar Sequência</Button>
-      <Link to='/benford'><Button>Benford 3X + 1</Button></Link>
-      <Button variant={'neutral'} className="bg-orange-500">
+      <Link to='https://dev.to/unimatrix2' target='_blank'><Button variant={'neutral'} className="bg-orange-500">
         ?
       </Button>
+      </Link>
     </div>
   );
 }
