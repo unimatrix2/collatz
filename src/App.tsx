@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import './App.css';
 import * as d3 from 'd3';
 import { useState, useEffect, useRef } from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from './components/ui/button';
+import { TopBar } from '@/components/organism/TopBar';
 
 function App() {
   const [number, setNumber] = useState<string>('');
@@ -59,8 +60,9 @@ function App() {
       for (let i = sequence.length - 1; i >= 0; i--) {
         const num = sequence[i];
         if (!nodeMap.has(num)) {
-          const newNode = { name: num.toString(), children: [], color };
+          const newNode = { name: num < 5000 ? num.toString() : '', fullName: num.toString(), children: [], color };
           nodeMap.set(num, newNode);
+          // @ts-ignore
           currentNode.children.push(newNode);
         }
         currentNode = nodeMap.get(num);
@@ -69,29 +71,47 @@ function App() {
 
     const treeLayout = d3.tree().size([innerHeight, width]);
     const rootHierarchy = d3.hierarchy(root);
+    // @ts-ignore
     treeLayout(rootHierarchy);
 
     // Calculate the maximum depth of the tree
     const maxDepth = d3.max(rootHierarchy.descendants(), d => d.depth) || 1;
-    const dynamicWidth = maxDepth * 100; // Adjust the multiplier as needed
+    const depth = svgRef.current!.clientWidth <= 360 ? maxDepth * 300 : maxDepth * 150;
+    const dynamicWidth = depth >= svgRef.current!.clientWidth ? depth : svgRef.current?.clientWidth  // Adjust the multiplier as needed
 
     // Update the SVG width dynamically
+    // @ts-ignore
     svg.attr('width', dynamicWidth);
 
     const zoom = d3.zoom()
-      .scaleExtent([0.5, 2])
+      .scaleExtent([0.2, 2])
       .on('zoom', (event) => {
         g.attr('transform', event.transform);
       });
 
+    // @ts-ignore
     svg.call(zoom);
+
+    // Create a tooltip
+    const tooltip = d3.select('body').append('div')
+      .attr('class', 'tooltip')
+      .style('position', 'absolute')
+      .style('visibility', 'hidden')
+      .style('background', '#fff')
+      .style('border', '1px solid #ccc')
+      .style('padding', '5px')
+      .style('border-radius', '3px')
+      .style('box-shadow', '0 0 10px rgba(0,0,0,0.1)');
 
     const link = g.selectAll('.link')
       .data(rootHierarchy.links())
       .enter().append('path')
       .attr('class', 'link')
+      // @ts-ignore
       .attr('d', d3.linkHorizontal()
+      // @ts-ignore
         .x(d => d.y)
+      // @ts-ignore
         .y(d => d.x))
       .attr('fill', 'none')
       .attr('stroke', '#ccc');
@@ -104,7 +124,23 @@ function App() {
 
     node.append('circle')
       .attr('r', 5)
-      .attr('fill', d => d.data.color || '#000');
+      // @ts-ignore
+      .attr('fill', d => d.data.color || '#000')
+      .on('mouseover', (event, d) => {
+        // @ts-ignore
+        if (d.data.fullName) {
+          // @ts-ignore
+          tooltip.html(d.data.fullName)
+            .style('visibility', 'visible');
+        }
+      })
+      .on('mousemove', (event) => {
+        tooltip.style('top', (event.pageY - 10) + 'px')
+          .style('left', (event.pageX + 10) + 'px');
+      })
+      .on('mouseout', () => {
+        tooltip.style('visibility', 'hidden');
+      });
 
     node.append('text')
       .attr('dy', '.35em')
@@ -115,19 +151,10 @@ function App() {
   }, [sequences]);
   
   return (
-    <main className="h-[100dvh] [background-size:16px_16px] bg-[radial-gradient(#80808080_1px,transparent_1px)] flex flex-col align-center justify-center">
-      <section className="w-[25%] min-w-72 pt-5">
-        <div className="w-full flex gap-5">
-          <Input
-            type="number"
-            inputMode="numeric"
-            placeholder="Insira um número para fatorar"
-            value={number}
-            onChange={updateNumber}
-          ></Input>
-          <Button onClick={addSequence}>Gerar Sequência</Button>
-        </div>
-      </section>
+    <main className="h-[100dvh] [background-size:16px_16px] bg-[radial-gradient(#80808080_1px,transparent_1px)] flex flex-col justify-center">
+      <nav className="w-full min-w-72 pt-5 bg-transparent flex justify-center shadow-2xl">
+        <TopBar number={number} updateNumber={updateNumber} addSequence={addSequence} />
+      </nav>
       <section className='w-full h-full overflow-hidden'>
       <svg ref={svgRef} width="100%" height="100%"></svg>
       </section>
