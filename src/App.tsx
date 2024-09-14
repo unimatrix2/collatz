@@ -103,7 +103,7 @@ function App() {
       .style('border-radius', '3px')
       .style('box-shadow', '0 0 10px rgba(0,0,0,0.1)');
 
-    const link = g.selectAll('.link')
+    g.selectAll('.link')
       .data(rootHierarchy.links())
       .enter().append('path')
       .attr('class', 'link')
