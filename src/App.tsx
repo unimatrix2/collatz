@@ -46,7 +46,6 @@ function App() {
     const height = svgRef.current?.clientHeight || 600;
 
     const margin = { top: 20, right: 30, bottom: 30, left: 40 };
-    const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
     const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
@@ -68,9 +67,16 @@ function App() {
       }
     });
 
-    const treeLayout = d3.tree().size([innerHeight, innerWidth]);
+    const treeLayout = d3.tree().size([innerHeight, width]);
     const rootHierarchy = d3.hierarchy(root);
     treeLayout(rootHierarchy);
+
+    // Calculate the maximum depth of the tree
+    const maxDepth = d3.max(rootHierarchy.descendants(), d => d.depth) || 1;
+    const dynamicWidth = maxDepth * 100; // Adjust the multiplier as needed
+
+    // Update the SVG width dynamically
+    svg.attr('width', dynamicWidth);
 
     const zoom = d3.zoom()
       .scaleExtent([0.5, 2])
@@ -122,7 +128,7 @@ function App() {
           <Button onClick={addSequence}>Gerar Sequência</Button>
         </div>
       </section>
-      <section className='w-full h-full'>
+      <section className='w-full h-full overflow-hidden'>
       <svg ref={svgRef} width="100%" height="100%"></svg>
       </section>
     </main>
