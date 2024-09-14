@@ -126,7 +126,7 @@ function App() {
       .attr('r', 5)
       // @ts-ignore
       .attr('fill', d => d.data.color || '#000')
-      .on('mouseover', (event, d) => {
+      .on('mouseover', (_event, d) => {
         // @ts-ignore
         if (d.data.fullName) {
           // @ts-ignore
